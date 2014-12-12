@@ -1,6 +1,14 @@
 <?php
 
 /**
+ * @file
+ *
+ * This module provides a new Views Global field that allows
+ * users to switch fields on or off during viewing.
+ *
+ */
+
+/**
  * Implements hook_views_api().
  */
 function views_fields_on_off_views_api() {
