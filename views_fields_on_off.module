@@ -3,7 +3,7 @@
 /**
  * @file
  *
- * This module provides a new Views Global field that allows users to switch fields on or off during viewing.
+ * Provides a Views Global field that allows users to turn fields on/off while viewing.
  *
  */
 
@@ -53,7 +53,7 @@ function views_fields_on_off_views_pre_view(&$view, &$display_id, &$args) {
         }
       }
     }
-    // And always hide the on/off field or it'll just show up empty
+    // And always hide the on/off field or it'll just show up empty.
     $view->display[$use_display_id]->handler->options['fields']['views_fields_on_off_form']['exclude'] = 1;
   }
 }
