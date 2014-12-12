@@ -32,9 +32,9 @@ function views_fields_on_off_views_pre_view(&$view, &$display_id, &$args) {
     // Grab the fields_on_off values that have been submitted already
     $on_off_submitted = array_key_exists('fields_on_off_hidden_submitted', $_GET);
     $checked_fields = array_key_exists('fields_on_off', $_GET) ? $_GET['fields_on_off'] : array();
+
     // We need $on_off_submitted because if the form is submitted with no checkboxes checked, none of the fields_on_off
     // values will be present, so it thinks this is a fresh view and all the columns should be checked.
-
     $hideable_fields = $view->display[$use_display_id]->handler->options['fields']['views_fields_on_off_form']['fields'];
 
     // So here if there are no checked fields but the form has been submitted, we want to turn off the field.
