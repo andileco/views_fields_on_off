@@ -50,7 +50,7 @@ class views_fields_on_off_form extends views_handler_field {
     $form['fields_on_off'] = array(
       '#type' => 'checkboxes',
       '#title' => 'Show Fields',
-      '#description' => 'Select the fields you want to display',
+      '#description' => t('Select the fields you want to display'),
       '#options' => $options,
       '#value' => $options, // I don't know why we have to include #options and #value, but it doesn't work if we don't...
     );

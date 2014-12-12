@@ -5,16 +5,13 @@
  */
 function views_fields_on_off_views_api() {
   return array(
-      'api' => 3,
-      'path' => drupal_get_path('module', 'views_fields_on_off') . '/includes/views',
+    'api' => 3,
+    'path' => drupal_get_path('module', 'views_fields_on_off') . '/includes/views',
   );
 }
 
 /**
  * Implements hook_views_pre_view().
- * @param $view
- * @param $display_id
- * @param $args
  */
 function views_fields_on_off_views_pre_view(&$view, &$display_id, &$args) {
   $use_display_id = $display_id;
