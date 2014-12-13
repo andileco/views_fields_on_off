@@ -24,14 +24,14 @@ class views_fields_on_off_form extends views_handler_field {
 
     $all_fields = $this->get_field_labels_no_relationship_names($this->view->display_handler);
 
-    // Grab the fields_on_off values that have been submitted already
+    // Grab the fields_on_off values that have been submitted already.
     $on_off_submitted = array_key_exists('fields_on_off_hidden_submitted', $_GET);
     $checked_fields = array_key_exists('fields_on_off', $_GET) ? $_GET['fields_on_off'] : array();
 
-    // Now loop through the fields defined in the view
+    // Now loop through the fields defined in the view.
     foreach ($fields as $field) {
       if ($field) {
-        $id = $field; //$field['id'];
+        $id = $field;
         if (array_key_exists($id, $all_fields)) {
           $label = $all_fields[$id];
           $options[$id] = $label;
@@ -46,13 +46,14 @@ class views_fields_on_off_form extends views_handler_field {
       }
     }
 
-    // Form API to build the checkboxes
+    // Form API to build the checkboxes.
     $form['fields_on_off'] = array(
       '#type' => 'checkboxes',
       '#title' => 'Show Fields',
       '#description' => t('Select the fields you want to display'),
       '#options' => $options,
-      '#value' => $options, // I don't know why we have to include #options and #value, but it doesn't work if we don't...
+      '#value' => $options,
+      // I don't know why we have to include #options and #value, but it doesn't work if we don't...
     );
 
     $form["fields_on_off_hidden_submitted"] = array(
@@ -133,5 +134,5 @@ class views_fields_on_off_form extends views_handler_field {
     );
   }
 
-  function query() { }
+  function query() {}
 }
