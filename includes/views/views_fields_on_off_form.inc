@@ -53,7 +53,8 @@ class views_fields_on_off_form extends views_handler_field {
       '#description' => t('Select the fields you want to display'),
       '#options' => $options,
       '#value' => $options,
-      // I don't know why we have to include #options and #value, but it doesn't work if we don't...
+      // I don't know why we have to include #options and #value, but it
+      // doesn't work if we don't...
     );
 
     $form["fields_on_off_hidden_submitted"] = array(
@@ -61,7 +62,8 @@ class views_fields_on_off_form extends views_handler_field {
       '#default_value' => 1,
     );
 
-    // Have to use $form_state['input'] because setting the default values on the form field itself doesn't work.
+    // Have to use $form_state['input'] because setting the default values on
+    // the form field itself doesn't work.
     // At all.
     // No idea why. Setting #default_value does absolutely nothing.
     $form_state['input']['fields_on_off'] = $checked;
@@ -81,8 +83,8 @@ class views_fields_on_off_form extends views_handler_field {
    * relationship associated if it exists.
    *
    * @param $groupable_only
-   *  Return only an array of field labels from handler that return TRUE
-   *  from use_string_group_by method.
+   *   Return only an array of field labels from handler that return TRUE
+   *   from use_string_group_by method.
    */
   function get_field_labels_no_relationship_names($display_handler) {
     $groupable_only = FALSE;
@@ -116,7 +118,7 @@ class views_fields_on_off_form extends views_handler_field {
   function options_form(&$form, &$form_state) {
     $all_fields = $this->get_field_labels_no_relationship_names($this->view->display_handler);
     // Remove any field that have been excluded from the display from the list.
-    foreach($all_fields as $key => $field) {
+    foreach ($all_fields as $key => $field) {
       $exclude = $this->view->display_handler->handlers['field'][$key]->options['exclude'];
       if ($exclude) {
         unset($all_fields[$key]);
