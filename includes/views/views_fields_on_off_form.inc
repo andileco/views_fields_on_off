@@ -64,8 +64,8 @@ class views_fields_on_off_form extends views_handler_field {
 
     // Have to use $form_state['input'] because setting the default values on
     // the form field itself doesn't work.
-    // At all.
-    // No idea why. Setting #default_value does absolutely nothing.
+    // Because of how Views handles the exposed filters,
+    // this is how we set our values in the form.
     $form_state['input']['fields_on_off'] = $checked;
   }
 
