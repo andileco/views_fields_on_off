@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Views Fields On/Off views code
+ * Views Fields On/Off views code.
  */
 
 /**
