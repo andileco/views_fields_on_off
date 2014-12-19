@@ -30,6 +30,9 @@ function views_fields_on_off_views_pre_view(&$view, &$display_id, &$args) {
     $use_display_id = 'default';
   }
 
+  // Now that we know what our display ID is, we can see whether or not that
+  // display has the On/Off handler on it.
+
   if (array_key_exists('fields', $view->display[$use_display_id]->handler->options) &&
       array_key_exists('views_fields_on_off_form', $view->display[$use_display_id]->handler->options['fields'])
   ) {

@@ -141,5 +141,6 @@ class views_fields_on_off_form extends views_handler_field {
     // This is not a real field and it only affects the query by excluding
     // fields from the display. But Views won't render if the query()
     // method is not present. This doesn't do anything, but it has to be here.
+    // This function is a void so it doesn't return anything.
   }
 }
