@@ -34,8 +34,9 @@ function views_fields_on_off_views_pre_view(&$view, &$display_id, &$args) {
       array_key_exists('views_fields_on_off_form', $view->display[$use_display_id]->handler->options['fields'])
   ) {
     // Grab the fields_on_off values that have been submitted already.
-    $on_off_submitted = array_key_exists('fields_on_off_hidden_submitted', $_GET);
-    $checked_fields = array_key_exists('fields_on_off', $_GET) ? $_GET['fields_on_off'] : array();
+    $params = drupal_get_query_parameters();
+    $on_off_submitted = array_key_exists('fields_on_off_hidden_submitted', $params);
+    $checked_fields = array_key_exists('fields_on_off', $params) ? $params['fields_on_off'] : array();
 
     // We need $on_off_submitted because if the form is submitted with no
     // checkboxes checked, none of the fields_on_off values will be present,

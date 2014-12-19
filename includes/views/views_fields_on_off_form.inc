@@ -25,8 +25,9 @@ class views_fields_on_off_form extends views_handler_field {
     $all_fields = $this->get_field_labels_no_relationship_names($this->view->display_handler);
 
     // Grab the fields_on_off values that have been submitted already.
-    $on_off_submitted = array_key_exists('fields_on_off_hidden_submitted', $_GET);
-    $checked_fields = array_key_exists('fields_on_off', $_GET) ? $_GET['fields_on_off'] : array();
+    $params = drupal_get_query_parameters();
+    $on_off_submitted = array_key_exists('fields_on_off_hidden_submitted', $params);
+    $checked_fields = array_key_exists('fields_on_off', $params) ? $params['fields_on_off'] : array();
 
     // Now loop through the fields defined in the view.
     foreach ($fields as $field) {
@@ -136,5 +137,9 @@ class views_fields_on_off_form extends views_handler_field {
     );
   }
 
-  function query() {}
+  function query() {
+    // This is not a real field and it only affects the query by excluding
+    // fields from the display. But Views won't render if the query()
+    // method is not present. This doesn't do anything, but it has to be here.
+  }
 }
