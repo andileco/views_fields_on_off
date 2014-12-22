@@ -80,12 +80,10 @@ class views_fields_on_off_form extends views_handler_field {
   }
 
   /**
-   * Retrieve a list of fields for the current display with the
-   * relationship associated if it exists.
+   * Retrieve a list of fields for the current display.
    *
-   * @param $groupable_only
-   *   Return only an array of field labels from handler that return TRUE
-   *   from use_string_group_by method.
+   * @param $display_handler
+   * @return array $options - array of Views options
    */
   function get_field_labels_no_relationship_names($display_handler) {
     $groupable_only = FALSE;
