@@ -50,7 +50,7 @@ class views_fields_on_off_form extends views_handler_field {
     // Form API to build the checkboxes.
     $form['fields_on_off'] = array(
       '#type' => 'checkboxes',
-      '#title' => 'Show Fields',
+      '#title' => t('Show Fields'),
       '#description' => t('Select the fields you want to display'),
       '#options' => $options,
       '#value' => $options,
