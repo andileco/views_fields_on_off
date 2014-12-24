@@ -89,15 +89,6 @@ class views_fields_on_off_form extends views_handler_field {
     $groupable_only = FALSE;
 
     $options = array();
-    foreach ($display_handler->get_handlers('relationship') as $relationship => $handler) {
-      if ($label = $handler->label()) {
-        $relationships[$relationship] = $label;
-      }
-      else {
-        $relationships[$relationship] = $handler->ui_name();
-      }
-    }
-
     foreach ($display_handler->get_handlers('field') as $id => $handler) {
       if ($groupable_only && !$handler->use_string_group_by()) {
         // Continue to next handler if it's not groupable.
