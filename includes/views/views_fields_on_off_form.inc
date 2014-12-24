@@ -83,7 +83,8 @@ class views_fields_on_off_form extends views_handler_field {
    * Retrieve a list of fields for the current display.
    *
    * @param $display_handler
-   * @return array $options - array of Views options
+   * @return array
+   *  array of Views options
    */
   function get_field_labels_no_relationship_names($display_handler) {
     $groupable_only = FALSE;
