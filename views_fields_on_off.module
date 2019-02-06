@@ -1,0 +1,62 @@
+<?php
+
+/**
+ * @file
+ * Provides a Views Global field that allows users to turn fields on/off.
+ */
+
+use Drupal\views\ViewExecutable;
+
+/**
+ * Implements hook_views_pre_view().
+ *
+ * @param \Drupal\views\ViewExecutable $view
+ * @param $display_id
+ * @param $args
+ */
+function views_fields_on_off_views_pre_view(ViewExecutable $view, $display_id, array &$args) {
+  $hasFields = array_key_exists('fields', $view->display_handler->options);
+  if ($hasFields) {
+    $useDefaultDisplay = !$view->display_handler->options['fields'] &&
+      $view->display_handler->default_display->options['fields'];
+    if ($useDefaultDisplay) {
+      $fields = $view->display_handler->default_display->options['fields'];
+    }
+    else {
+      $fields = $view->display_handler->options['fields'];
+    }
+    // Grab the fields_on_off values that have been submitted already.
+    $params = \Drupal::request()->query->all();
+    $on_off_submitted = array_key_exists('fields_on_off_hidden_submitted', $params);
+    $checked_fields = array_key_exists('fields_on_off', $params) ? $params['fields_on_off'] : [];
+
+    // We need $on_off_submitted because if the form is submitted with no
+    // checkboxes checked, none of the fields_on_off values will be present,
+    // so it thinks this is a fresh view and all the columns should be checked.
+    $hideable_fields = $fields['views_fields_on_off_form']['fields'];
+
+    // Here if there are no checked fields but the form has been submitted,
+    // we want to turn off the field.
+    if (count($checked_fields) || $on_off_submitted) {
+      foreach ($fields as $key => $field) {
+        if (!array_key_exists($key, $checked_fields) &&
+          array_key_exists($key, $hideable_fields) &&
+          $hideable_fields[$key]
+        ) {
+          // If there are fields specified, and this field is one of them,
+          // hide it!
+          $fields[$key]['exclude'] = 1;
+        }
+      }
+    }
+    // And always hide the on/off field or it'll just show up empty.
+    $fields['views_fields_on_off_form']['exclude'] = 1;
+    if ($useDefaultDisplay) {
+      $view->display_handler->default_display->options['fields'] = $fields;
+    }
+    else {
+      $view->display_handler->options['fields'] = $fields;
+    }
+  }
+
+}
