@@ -5,10 +5,8 @@ namespace Drupal\views_fields_on_off\Plugin\views\field;
 use Drupal\views\Plugin\views\field\FieldPluginBase;
 use Drupal\Core\Form\FormStateInterface;
 
-
 /**
  * Provides a handler that adds the form for Fields On/Off.
- *
  *
  * @ingroup views_field_handlers
  *
@@ -17,22 +15,21 @@ use Drupal\Core\Form\FormStateInterface;
 class ViewsFieldsOnOffForm extends FieldPluginBase {
 
   /**
-   * @return bool
+   * {@inheritdoc}
    */
   public function canExpose() {
     return TRUE;
   }
 
   /**
-   * @return bool
+   * {@inheritdoc}
    */
   public function isExposed() {
     return TRUE;
   }
 
   /**
-   * @param $form
-   * @param $form_state
+   * {@inheritdoc}
    */
   public function buildExposedForm(&$form, FormStateInterface $form_state) {
     $fields = $this->options['fields'];
@@ -58,7 +55,7 @@ class ViewsFieldsOnOffForm extends FieldPluginBase {
           // If the field is included on the querystring...
           $check_me = (!count($checked_fields) && !$on_off_submitted) || array_key_exists($id, $checked_fields);
           if ($check_me) {
-            // Check it because it has already been selected
+            // Check it because it has already been selected.
             $checked[$id] = TRUE;
           }
         }
@@ -80,14 +77,6 @@ class ViewsFieldsOnOffForm extends FieldPluginBase {
       '#type' => 'hidden',
       '#default_value' => 1,
     ];
-
-    // Have to use $form_state['input'] because setting the default values on
-    // the form field itself doesn't work.
-    // Because of how Views handles the exposed filters,
-    // this is how we set our values in the form.
-   //
-   // Not sure if this is needed for D8
-   // $form_state['input']['fields_on_off'] = $checked;
   }
 
   /**
