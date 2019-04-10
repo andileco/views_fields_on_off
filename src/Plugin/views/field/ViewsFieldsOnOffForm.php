@@ -32,51 +32,29 @@ class ViewsFieldsOnOffForm extends FieldPluginBase {
    * {@inheritdoc}
    */
   public function buildExposedForm(&$form, FormStateInterface $form_state) {
-    $fields = $this->options['fields'];
-    $options = [];
-    $checked = [];
 
+    $field_id = $this->options['id'];
+    $label = $this->options['label'];
+    $selected_options = $this->options['fields'];
     $all_fields = $this->displayHandler->getFieldLabels();
+    $options = array_filter($all_fields, function ($key) use ($selected_options) {
+      return in_array($key, $selected_options, TRUE);
+    }, ARRAY_FILTER_USE_KEY);
 
-    // Grab the fields_on_off values that have been submitted already.
-    $params = \Drupal::request()->query->all();
-
-    $on_off_submitted = array_key_exists('fields_on_off_hidden_submitted', $params);
-    $checked_fields = array_key_exists('fields_on_off', $params) ? $params['fields_on_off'] : [];
-
-    // Now loop through the fields defined in the view.
-    foreach ($fields as $field) {
-      if ($field) {
-        $id = $field;
-        if (array_key_exists($id, $all_fields)) {
-          $label = $all_fields[$id];
-          $options[$id] = $label;
-
-          // If the field is included on the querystring...
-          $check_me = (!count($checked_fields) && !$on_off_submitted) || array_key_exists($id, $checked_fields);
-          if ($check_me) {
-            // Check it because it has already been selected.
-            $checked[$id] = TRUE;
-          }
-        }
-      }
-    }
-
-    // Form API to build the checkboxes.
-    $form['fields_on_off'] = [
+    $form[$field_id] = [
       '#type' => 'checkboxes',
-      '#title' => t('Show Fields'),
-      '#description' => t('Select the fields you want to display'),
+      '#title' => $this->t('@value', [
+        '@value' => $label,
+      ]),
+      '#description' => t('Select the fields you want to display.'),
       '#options' => $options,
-      '#value' => $options,
-      // I don't know why we have to include #options and #value, but it
-      // doesn't work if we don't...
     ];
 
     $form['fields_on_off_hidden_submitted'] = [
       '#type' => 'hidden',
       '#default_value' => 1,
     ];
+
   }
 
   /**
