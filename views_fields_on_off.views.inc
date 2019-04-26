@@ -16,6 +16,13 @@ function views_fields_on_off_views_data() {
       'id' => 'views_fields_on_off_form',
     ],
   ];
+  $data['views']['views_fields_combined_on_off_form'] = [
+    'title' => t('Combined On/Off Form'),
+    'help' => t('Display fields to be switched on and off.'),
+    'field' => [
+      'id' => 'views_fields_combined_on_off_form',
+    ],
+  ];
 
   return $data;
 }

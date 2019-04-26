@@ -10,9 +10,9 @@ use Drupal\Core\Form\FormStateInterface;
  *
  * @ingroup views_field_handlers
  *
- * @ViewsField("views_fields_on_off_form")
+ * @ViewsField("views_fields_combined_on_off_form")
  */
-class ViewsFieldsOnOffForm extends FieldPluginBase {
+class ViewsFieldsCombinedOnOffForm extends FieldPluginBase {
 
   /**
    * {@inheritdoc}
@@ -35,48 +35,35 @@ class ViewsFieldsOnOffForm extends FieldPluginBase {
 
     $field_id = $this->options['id'];
     $label = $this->options['label'];
-    $selected_options = $this->options['fields'];
+    $combined_count = count($this->options['fieldset']);
+    $combined_select_options = [];
+    for ($i = 0; $i < $combined_count; $i++) {
+      array_push($combined_select_options, $this->options['fieldset'][$i]['title']);
+    }
     $all_fields = $this->displayHandler->getFieldLabels();
-    $options = array_filter($all_fields, function ($key) use ($selected_options) {
-      return in_array($key, $selected_options, TRUE);
-    }, ARRAY_FILTER_USE_KEY);
-
-    if (!empty($this->options['exposed_select_type']) && $this->options['exposed_select_type'] === 'radios') {
-      $type = 'radios';
-    }
-    else {
-      $type = 'checkboxes';
-    }
 
     $form[$field_id] = [
-      '#type' => $type,
+      '#type' => $this->options['exposed_select_type'],
       '#title' => $this->t('@value', [
         '@value' => $label,
       ]),
-      '#options' => $options,
+      '#options' => $combined_select_options,
     ];
-
-    if ($form[$field_id]['#type'] == 'checkboxes'
-      && $this->view->getDisplay()
-        ->getOption('exposed_form')['type'] !== 'input_required'
-    ) {
-      // If the form has been submitted, don't have all boxes checked.
-      $params = \Drupal::request()->query->all();
-      // This is for a GET request.
-      // If the view is submitted through AJAX, like in view preview, it will be
-      // a POST request. Merge the parameter arrays and we’ll get our values.
-      $postParams = \Drupal::request()->request->all();
-      $params = array_merge($params, $postParams);
-      if ($params['fields_on_off_hidden_submitted'] != 1) {
-        $form[$field_id]['#attributes'] = ['checked' => 'checked'];
-      }
-    }
-
     $form['fields_on_off_hidden_submitted'] = [
       '#type' => 'hidden',
       '#default_value' => 1,
     ];
-
+    
+    $selected_options = $this->options['fieldset'][0]['fields'];
+    $options = array_filter($all_fields, function ($key) use ($selected_options) {
+      return in_array($key, $selected_options, TRUE);
+    }, ARRAY_FILTER_USE_KEY);
+    foreach ($options as $key => $value) {
+      $form['views_fields_combined_on_off_form'.'_'.$key] = [
+        '#type' => 'hidden',
+        '#default_value' => $key,
+      ];
+    }
   }
 
   /**
@@ -85,7 +72,10 @@ class ViewsFieldsOnOffForm extends FieldPluginBase {
   protected function defineOptions() {
     $options = parent::defineOptions();
 
-    $options['fields'] = ['default' => []];
+    $options['fieldset'][0]['fields'] = ['default' => []];
+    $options['fieldset'][0]['title'] = ['default' => ''];
+    $options['fieldset'][1]['fields'] = ['default' => []];
+    $options['fieldset'][1]['title'] = ['default' => ''];
     $options['exposed_select_type'] = ['default' => 'checkboxes'];
 
     return $options;
@@ -109,13 +99,45 @@ class ViewsFieldsOnOffForm extends FieldPluginBase {
 
     // Offer to include only those fields that follow this one.
     $field_options = array_slice($all_fields, 0, array_search($this->options['id'], array_keys($all_fields)));
-    $form['fields'] = [
+
+    $form['fieldset'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('Fields'),
+    ];
+
+    $form['fieldset'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('Fields'),
+    ];
+
+    $form['fieldset'][0]['title'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Title'),
+      '#default_value' => $this->options['fieldset'][0]['title'],
+    ];
+
+    $form['fieldset'][0]['fields'] = [
       '#type' => 'checkboxes',
-      '#title' => t('Fields'),
+      '#title' => $this->t('Fields'),
       '#description' => t('Fields to be turned on and off.'),
       '#options' => $field_options,
-      '#default_value' => $this->options['fields'],
+      '#default_value' => $this->options['fieldset'][0]['fields'],
     ];
+
+    $form['fieldset'][1]['title'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Title'),
+      '#default_value' => $this->options['fieldset'][1]['title'],
+    ];
+
+    $form['fieldset'][1]['fields'] = [
+      '#type' => 'checkboxes',
+      '#title' => $this->t('Fields'),
+      '#description' => t('Fields to be turned on and off.'),
+      '#options' => $field_options,
+      '#default_value' => $this->options['fieldset'][1]['fields'],
+    ];
+
     $form['exposed_select_type'] = [
       '#type' => 'radios',
       '#title' => t('Exposed Selection Field Type'),

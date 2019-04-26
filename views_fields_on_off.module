@@ -11,6 +11,7 @@ use Drupal\views\ViewExecutable;
  * Implements hook_views_pre_view().
  */
 function views_fields_on_off_views_pre_view(ViewExecutable $view, $display_id, array &$args) {
+
   $hasFields = array_key_exists('fields', $view->display_handler->options);
   if ($hasFields) {
     $useDefaultDisplay = !$view->display_handler->options['fields'] &&
@@ -27,13 +28,16 @@ function views_fields_on_off_views_pre_view(ViewExecutable $view, $display_id, a
 
     foreach ($fields as $field) {
       if (array_key_exists('plugin_id', $field)) {
-        if ($field['plugin_id'] === 'views_fields_on_off_form') {
+        if ($field['plugin_id'] === 'views_fields_on_off_form'
+          || $field['plugin_id'] === 'views_fields_combined_on_off_form'
+        ) {
           $hasViewsFieldsOnOffHandler = TRUE;
         }
       }
     }
 
     if ($hasViewsFieldsOnOffHandler) {
+
       // Grab the fields_on_off values that have been submitted already.
       $params = \Drupal::request()->query->all();
       // This is for a GET request.
@@ -53,18 +57,62 @@ function views_fields_on_off_views_pre_view(ViewExecutable $view, $display_id, a
 
       // Get the fields marked as able to be hidden if not checked.
       $hideable_fields = [];
-      foreach ($params as $key => $value) {
-        if (strpos($key, 'views_fields_on_off_form') === 0) {
-          $checked_fields = array_merge($checked_fields, $value);
-          $hideable = $fields[$key]['fields'];
-          foreach ($hideable as $hideable_key => $hideable_value) {
-            if ($hideable[$hideable_key] === 0) {
-              unset($hideable[$hideable_key]);
+
+      if ($fields['views_fields_combined_on_off_form']) {
+
+        $combined_count = count($fields['views_fields_combined_on_off_form']['fieldset']);
+        $selected_fields = [];
+        for ($i = 0; $i < $combined_count; $i++) {
+          $selected_group = $fields['views_fields_combined_on_off_form']['fieldset'][$i]['fields'];
+          foreach ($selected_group as $selectable_key => $selectable_value) {
+            if ($selected_group[$selectable_key] === 0) {
+              unset($selected_group[$selectable_key]);
             }
           }
-          $hideable_fields = array_merge($hideable_fields, $hideable);
+          $selected_fields = array_merge($selected_fields, $selected_group);
+        }
+
+        foreach ($params as $key => $value) {
+          if (strpos($key, 'views_fields_combined_on_off_form') === 0) {
+            $reformatted_value = [];
+            $reformatted_value[$value] = $value;
+            $checked_fields = array_merge($checked_fields, $reformatted_value);
+            $hideable = $selected_fields;
+            foreach ($hideable as $hideable_key => $hideable_value) {
+              if ($hideable[$hideable_key] !== 0) {
+                unset($hideable[$hideable_key]);
+              }
+              $hideable[$hideable_key] = $hideable_key;
+            }
+            $hideable_fields = array_merge($hideable_fields, $hideable);
+          }
         }
       }
+
+      if ($fields['views_fields_on_off_form']) {
+        foreach ($params as $key => $value) {
+          if (strpos($key, 'views_fields_on_off_form') === 0) {
+            if(!empty($view->getHandler($display_id, 'field', $key)['exposed_select_type'])
+              && $view->getHandler($display_id, 'field', $key)['exposed_select_type'] === 'radios') {
+              $reformatted_value = [];
+              $reformatted_value[$value] = $value;
+              $checked_fields = array_merge($checked_fields, $reformatted_value);
+            }
+            else {
+              $checked_fields = array_merge($checked_fields, $value);
+            }
+            $hideable = $fields[$key]['fields'];
+            foreach ($hideable as $hideable_key => $hideable_value) {
+              if ($hideable[$hideable_key] === 0) {
+                unset($hideable[$hideable_key]);
+              }
+            }
+            $hideable_fields = array_merge($hideable_fields, $hideable);
+          }
+        }
+      }
+
+
 
       // Here if there are no checked fields but the form has been submitted,
       // we want to turn off the field.
@@ -80,7 +128,9 @@ function views_fields_on_off_views_pre_view(ViewExecutable $view, $display_id, a
       }
 
       foreach ($fields as $key => $value) {
-        if (strpos($key, 'views_fields_on_off_form') === 0) {
+        if (strpos($key, 'views_fields_on_off_form') === 0
+          || strpos($key, 'views_fields_combined_on_off_form') === 0
+        ) {
           // And always hide the on/off field or it'll just show up empty.
           $fields[$key]['exclude'] = 1;
         }
